@@ -1,0 +1,2 @@
+The data type of column 3 is a: <class 'astropy.table.column.Column'>.
+The length of column 3 is 1761: bits.
