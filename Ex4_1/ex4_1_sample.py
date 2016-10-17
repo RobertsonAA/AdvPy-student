@@ -6,8 +6,12 @@
 """
 import string
 
-
 base = string.ascii_uppercase
+
+f = open('ex4_1_data.txt')
+data = f.read()
+
+print data
 
 def rot13Convert(data):
     """
@@ -19,11 +23,9 @@ def rot13Convert(data):
     result = ''
     for letter in data:
         if letter.isalpha():
-            base_position = base.find(letter.upper())
-            encoded_position = (base_position - 13) % len(base)
+            base_position = base.find(letter.upper()) #turn letter into uppercase, based on general variable 'ascii.uppercase'
+            encoded_position = (base_position - 13) % len(base) #remainder of 26 letters to always be a letter
             result += base[encoded_position]
         else:
             result += letter
     return result
-
-
