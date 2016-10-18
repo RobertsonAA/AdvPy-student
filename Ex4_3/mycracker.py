@@ -1,28 +1,52 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import os, sys
 import crypt
-#from __future__ import print_function
+import codecs
+from datetime import datetime, timedelta
+import argparse
 
-def testPass(cryptPass):
-    salt = cryptPass[0:2]
+today = datetime.today()
 
-    dictFile = open('password.lst')
-    for word in dictFile.readlines():
-        word = word.strip()
-        cryptWord = crypt.crypt(word.salt)
-        if (cryptWord == cryptPass):
-            print "Found Password: " + word + "\n"
-            return
 
-    print "[-] Password Not Found.\n"
-    return
+def testPass(cryptPass, user):
+    dicFile = open('password.lst', 'r')
+    ctype = cryptPass.split("$")[1]
+
+    if ctype == '6':
+        print "[+] Hash type SHA-512 detected ..."
+        print "[+] Be patient ..."
+        salt = cryptPass.split("$")[2]
+        insalt = "$" + ctype + "$" + salt + "$"
+        for word in dicFile.readlines():
+            word = word.strip('\n')
+            cryptWord = crypt.crypt(word, insalt)
+            if (cryptWord == cryptPass):
+                time = time = str(datetime.today() - today)
+                print "[+] Found password for the user: " + user + " ====> " + word + " Time: " + time + "\n"
+                return
+        else:
+            print "Nothing found, bye!!"
+        exit
 
 def main():
-    passFile = open('ex4_3_data.txt')
-    for line in passFile.readlines():
-        if ":" in line:
-            user = line.split(':')[0]
-            cryptPass = line.split(':')[1].strip('')
-            print "Cracking Password For: " + user
-            testPass(cryptPass)
+    parse = argparse.ArgumentParser(description='A simple brute force /etc/shadow .')
+
+
+    parse.add_argument('-f', action='store', dest='path', help='Path to shadow file, example: \'/etc/shadow\'')
+    argus = parse.parse_args()
+    if argus.path == None:
+        parse.print_help()
+        exit
+    else:
+        passFile = open(argus.path, 'r')
+        for line in passFile.readlines():
+            line = line.replace("\n", "").split(":")
+            if not line[1] in ['x', '*', '!']:
+                user = line[0]
+            cryptPass = line[1]
+            testPass(cryptPass, user)
 
 if __name__ == "__main__":
     main()
